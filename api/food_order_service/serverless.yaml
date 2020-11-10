@@ -1,0 +1,65 @@
+service: orders-table
+
+provider:
+  name: aws
+  runtime: python3.8
+  environment:
+    ORDERS_TABLE: ${self:service}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ORDERS_TABLE}"
+
+functions:
+  fetch:
+    handler: fetch.fetch
+    package: {}
+    events:
+      - http:
+          path: fetch
+          method: get
+          cors: true
+  create:
+    handler: create.create
+    package: {}
+    events:
+      - http:
+          path: create
+          method: post
+          cors: true
+  delete:
+    handler: delete.delete
+    package: {}
+    events:
+      - http:
+          path: delete/{nodeid}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    BookmarksDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: userid
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: userid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ORDERS_TABLE}
+
+plugins:
+  - serverless-python-requirements
