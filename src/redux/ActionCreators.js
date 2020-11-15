@@ -1,5 +1,5 @@
 import * as ActionTypes from './ActionTypes';
-import { baseUrl, user_key, client_id, client_secret, userUrl } from './config';
+import { baseUrl, user_key, userUrl } from './config';
 import { getToken } from '../Authorisation';
 
 export const setUser = (details) => ({
@@ -114,16 +114,28 @@ export const setRestaurants = (details) => ({
     payload: details
 });
 
-export const setOrder = (items) => (dispatch) => {
+export const fetchOrder = (details) => ({
+    type: ActionTypes.FETCH_ORDERS,
+    payload: details
+});
+
+export const setOrder = (items, rest) => (dispatch) => {
+    items.map((item, id) => {
+        item['restaurant'] = rest
+    });
     const newOrder = {
         items: items,
         date: new Date().toISOString()
     }
+    console.log(newOrder);
     return fetch(baseUrl + '/create', {
         method: 'POST',
+        mode: "cors",
+        cache: "no-cache",
         body: JSON.stringify(newOrder),
         headers: {
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type' : 'application/json'
         },
         credentials: 'same-origin'
     })
@@ -138,16 +150,16 @@ export const setOrder = (items) => (dispatch) => {
             }
         },
             error => {
-                var errmess = new Error(error.message);
                 throw error;
             })
         .then(response => response.json())
-        .then(response => { console.log(response); alert("Order successfull :" + JSON.stringify(response)); })
+        .then(response => { console.log(response); dispatch(fetchOrder(response['output'])); alert("Order successfull :" + JSON.stringify(response)); })
         .catch(error => {
             console.log('Post comments ', error.message);
             alert('Your comment could not be posted: ' + error.message);
         })
 }
+
 export const getRestaurants = (lat, lon) => (dispatch) => {
     console.log(lat, lon);
     return fetch('https://developers.zomato.com/api/v2.1/search?count=20&lat=' + lat + '&lon=' + lon, {
@@ -168,7 +180,6 @@ export const getRestaurants = (lat, lon) => (dispatch) => {
             }
         },
             error => {
-                var errmess = new Error(error.message);
                 throw error;
             })
         .then(response => response.json())
@@ -183,74 +194,73 @@ export const getRestaurants = (lat, lon) => (dispatch) => {
         })
 }
 
-// export const getMenu = () => 
-// {
+export const fetchOrders = () => (dispatch) => {
 
-//     return fetch('https://api.uber.com/v1/eats/stores?limit=10', {
-//         method: 'GET',
-//         headers: {
-//             'authorization': 'Bearer '+ auth
-//         },
-//         credentials: 'same-origin'
-//     })
-//     .then(response => {
-//         if(response.ok)
-//         {
-//             return response;
-//         }
-//         else{
-//             var error = new Error('Error' + response.status + ": "+ response.statusText);
-//             error.response = response;
-//             throw error;
-//         }
-//     },
-//     error => {   
-//         var errmess = new Error(error.message);
-//         throw error;
-//      })
-//      .then(response => response.json())
-//      .then(response => {
-//         console.log('Post Feedback ', response);
-//         alert('Thank you for your feedback: '+ JSON.stringify(response));
-//      })
-//      .catch(error => {
-//          console.log('Post Feedback ', error.message);
-//          alert('Your feedback could not be posted: '+ error.message);
-//      })
-// }
-
-export const saveOrder = () => {
-
-    return fetch(baseUrl + '/create', {
-        method: 'POST',
+    return fetch( baseUrl+ '/fetch' , {
+        method: 'GET',
+        mode: "cors",
+        cache: "no-cache",
         headers: {
             'Authorization': `Bearer ${getToken()}`,
-            'Content-Type': 'application/json'
+            'Content-Type' : 'application/json'
         },
         credentials: 'same-origin'
     })
-        .then(response => {
-            if (response.ok) {
+    .then(response => {
+            if (response.ok)
+            {
                 return response;
             }
             else {
-                var error = new Error('Error' + response.status + ": " + response.statusText);
+                var error = new Error('Error' + response.status + ': ' + response.statusText);
                 error.response = response;
                 throw error;
             }
-        },
-            error => {
-                var errmess = new Error(error.message);
-                throw error;
-            })
-        .then(response => response.json())
-        .then(response => {
-            console.log('Post Feedback ', response);
-            alert('Thank you for your feedback: ' + JSON.stringify(response));
-        })
-        .catch(error => {
-            console.log('Post Feedback ', error.message);
-            alert('Your feedback could not be posted: ' + error.message);
-        })
-
+    },
+    error => {
+        throw error;
+    }
+    )
+    .then(response => response.json())
+    .then(response => {
+        console.log(response['output']);
+        dispatch(fetchOrder(response['output']));
+    })
+    .catch(error => console.log(error.message));
 }
+
+// export const saveOrder = () => {
+
+//     return fetch(baseUrl + '/create', {
+//         method: 'POST',
+//         headers: {
+//             'Authorization': `Bearer ${getToken()}`,
+//             'Content-Type': 'application/json'
+//         },
+//         credentials: 'same-origin'
+//     })
+//         .then(response => {
+//             if (response.ok) {
+//                 return response;
+//             }
+//             else {
+//                 var error = new Error('Error' + response.status + ": " + response.statusText);
+//                 error.response = response;
+//                 throw error;
+//             }
+//         },
+//             error => {
+//                 var errmess = new Error(error.message);
+//                 throw error;
+//             })
+//         .then(response => response.json())
+//         .then(response => {
+//             console.log('Post Feedback ', response);
+//             alert('Thank you for your feedback: ' + JSON.stringify(response));
+//         })
+//         .catch(error => {
+//             console.log('Post Feedback ', error.message);
+//             alert('Your feedback could not be posted: ' + error.message);
+//         })
+
+// }

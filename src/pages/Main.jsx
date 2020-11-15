@@ -5,13 +5,15 @@ import Header from './HeaderComponent';
 import LoginPage from './LoginPage';
 import Hotels from './Hotels';
 import OrderPage from './OrderPage';
+import MyOrders from './MyOrders';
 import { Switch, Route, Redirect} from 'react-router-dom';
-import { getRestaurants, registerUser, loginUser, logoutUser, setOrder } from '../redux/ActionCreators';
+import { getRestaurants, registerUser, loginUser, logoutUser, setOrder, fetchOrders } from '../redux/ActionCreators';
 
 const mapStateToProps = state => {
     return {
         user: state.user,
-        restaurants: state.restaurants
+        restaurants: state.restaurants,
+        orders: state.orders
     }
 }
 const mapDispatchToProps = (dispatch) => ({
@@ -19,7 +21,8 @@ const mapDispatchToProps = (dispatch) => ({
     registerUser: (firstName, lastName, email, password) => dispatch(registerUser(firstName, lastName, email, password)),
     loginUser: (email, password) => dispatch(loginUser(email, password)),
     logoutUser: () => {dispatch(logoutUser())},
-    setOrder: (items) => dispatch(setOrder(items))
+    setOrder: (items, rest) => dispatch(setOrder(items, rest)),
+    fetchOrders: () => dispatch(fetchOrders())
 })
 
 class Main extends Component {
@@ -29,19 +32,26 @@ class Main extends Component {
                 <Hotels getRestaurants={this.props.getRestaurants} restaurants={this.props.restaurants}/>
             );
         }
-        const Orders = ({match}) => {
+        const DishPage = ({match}) => {
             return (
                 <OrderPage dish={this.props.restaurants.restaurants.filter((x) => x.restaurant.R.res_id === parseInt(match.params.id, 10))[0]} setOrder={this.props.setOrder}/>
             );
         }
 
+        const MyOrdersWithData = () => {
+            return (
+                <MyOrders orders={this.props.orders.orders} />
+            );
+        }
+
         return (
             <>
-                <Header  registerUser={this.props.registerUser} loginUser={this.props.loginUser} logoutUser={this.props.logoutUser} user={this.props.user.name}/>
+                <Header  registerUser={this.props.registerUser} loginUser={this.props.loginUser} logoutUser={this.props.logoutUser} user={this.props.user.name} fetchOrders={this.props.fetchOrders}/>
                 <Switch>
                     <Route path="/home" component={LoginPage}/>
                     <Route path="/search" component={HotelsPage}/>
-                    <Route path="/cart/:id" component={Orders}/>
+                    <Route path="/cart/:id" component={DishPage}/>
+                    <Route path="/orders" component={MyOrdersWithData} />
                     <Redirect to="/home" />
                 </Switch>
             </>

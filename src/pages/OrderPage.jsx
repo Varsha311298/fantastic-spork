@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
-import MyCart from '../components/MyCart';
-import { Button, ButtonGroup, Col, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { Button, ButtonGroup, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import { isLoggedIn } from '../Authorisation';
 class OrderPage extends Component {
     constructor() {
         super();
         this.state = {
-            dish: {
-                restaurant:
-                {
-                    'name': 'ABC',
-                    'thumb': 'ABV'
-                }
-            },
             Item: '',
             items: [],
             quantity: 1,
@@ -76,22 +68,22 @@ class OrderPage extends Component {
         console.log(amount);
     }
     order() {
-        this.props.setOrder(this.state.items);
+        this.props.setOrder(this.state.items, this.props.dish.restaurant.name);
     }
     render() {
         return (
             <>
                 {isLoggedIn() ? <>
-                <img src={this.state.dish.restaurant.thumb} alt={this.state.dish.restaurant.name} />
-                <h1>{this.state.dish.restaurant.name}</h1>
+                <img src={this.props.dish.restaurant.thumb} alt={this.props.dish.restaurant.name} />
+                <h1>{this.props.dish.restaurant.name}</h1>
                 <div className="container">
                     <div className="row">
                         <h4>Add your items here: </h4>
                     </div>
                     <div className="row">
                         <ListGroup>
-                            {this.state.items.map(function (item) {
-                                return <ListGroupItem>{item.name} Qty: {item.qty} Price: {item.price}</ListGroupItem>
+                            {this.state.items.map(function (item, index) {
+                                return <ListGroupItem key={index}>{item.name} Qty: {item.qty} Price: {item.price}</ListGroupItem>
                             })}
                         </ListGroup>
                     </div>
@@ -121,7 +113,6 @@ class OrderPage extends Component {
                                     <span className="spn">{'\u20B9'}  {this.state.amount}</span>
                             </p>
                             <Button id="pay" outline onClick={this.total.bind(this)}>Calculate </Button>
-                            <br />
                             <Button color="info" onClick={this.order.bind(this)}>Pay Now</Button>
                         </div>
                     </div>

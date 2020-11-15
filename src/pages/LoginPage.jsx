@@ -1,15 +1,9 @@
 import React from 'react';
 import '../styles/LoginStyle.css'
 import Front from '../images/FB.jpg'
-import TextInput from '../components/TextInput'
-import {getRestaurants} from '../redux/ActionCreators'
 import {Jumbotron} from 'reactstrap';
 
 class LoginPage extends React.Component{
-    constructor(){
-        super();
-    }
-
     onChangeUser=(event)=>{
         this.setState({username:event.target.value})
     }

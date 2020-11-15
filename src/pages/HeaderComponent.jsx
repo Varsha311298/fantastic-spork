@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, Jumbotron, Modal, Button, ModalHeader, ModalBody, Form, FormFeedback, FormGroup, Input, Label, Col} from 'reactstrap';
+import { Navbar, Nav, NavItem, Modal, Button, ModalHeader, ModalBody, Form, FormFeedback, FormGroup, Input, Label, Col} from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 
 class Header extends Component {
@@ -143,6 +143,13 @@ class Header extends Component {
                         <NavItem>
                             <NavLink className="nav-link" to="/search">
                                 <span className="fa fa-home fa-lg"></span> Search
+                            </NavLink>
+                        </NavItem>
+                    </Nav>
+                    <Nav navbar>
+                        <NavItem>
+                            <NavLink className="nav-link" to="/orders" onClick={this.props.fetchOrders}>
+                                <span className="fa fa-bars fa-lg"></span> Orders
                             </NavLink>
                         </NavItem>
                     </Nav>
