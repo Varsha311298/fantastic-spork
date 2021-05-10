@@ -1,4 +1,4 @@
-# Meat & Eat -- Food Ordering System
+# Food Ordering System
 
 Helps users to discover nearby restaurants/cafes along with their ratings, reviews, cuisine details etc. 
 Allows users to order food online.
