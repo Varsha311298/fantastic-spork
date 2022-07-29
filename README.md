@@ -8,7 +8,11 @@ Allows users to order food online.
 
 ## Tools and Technologies:
 
-### Front end: React, Redux
-### Back end: Python, AWS lambda, AWS dynamo DB
-### Framwork: Serverless, for allocation of resources in the cloud
-### Authorisation: JWT tokens
+### Front end: 
+React, Redux
+### Back end: 
+Python, AWS lambda, AWS dynamo DB
+### Framwork: 
+Serverless, for allocation of resources in the cloud
+### Authorisation: 
+JWT tokens
